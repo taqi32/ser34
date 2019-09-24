@@ -1,277 +1,225 @@
 const Discord = require('discord.js');
-const client = new Discord.Client(); 
+const client = new Discord.Client();
 const fs = require('fs');
-const prefix = "$"
-
-
-
-
-let antihack = JSON.parse(fs.readFileSync('./antihack.json' , 'utf8'));//require antihack.json file
-client.on('message', message => {
-    if(message.content.startsWith(prefix + "toggleAntihack")) {
-        if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
-        if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('**Sorry But You Dont Have Permission** `MANAGE_GUILD`' );
-        if(!antihack[message.guild.id]) antihack[message.guild.id] = {
-          onoff: 'Off'
-        }
-          if(antihack[message.guild.id].onoff === 'Off') return [message.channel.send(`**ג… The AntiHack Is __ננ__ !**`), antihack[message.guild.id].onoff = 'On']
-          if(antihack[message.guild.id].onoff === 'On') return [message.channel.send(`**ג›” The AntiHack Is __ננ…]נ…__ !**`), antihack[message.guild.id].onoff = 'Off']
-          fs.writeFile("./antihack.json", JSON.stringify(antihack), (err) => {
-            if (err) console.error(err)
-            .catch(err => {
-              console.error(err);
-          });
-            });
-          }
+const prefix = "BO";
+const moment = require('moment');
+const pretty = require("pretty-ms");
+const { User, MessageMentions } = require('discord.js')
+const Canvas = require('canvas-prebuilt');
+const Jimp = require('jimp');
+const SQLite = require('sqlite');
+const path = require('path');
+const ms = require('parse-ms');
  
-        })
-        
+//Zine , Mohamed Tarek , Kbosh
  
-  let banse = new Set();
-  let bane = JSON.parse(fs.readFileSync('./data1.json' , 'utf8'));//require data1.json
-  client.on('guildBanAdd', function(guild) {
-    guild.fetchAuditLogs().then(logs => {
-      const ser = logs.entries.first().executor;
-      if(!bane[ser.id+guild.id]) bane[ser.id+guild.id] = {
-        bans: 2
-      }
-      if(antihack[guild.guild.id].onoff === 'Off') return;
-      let boner = bane[ser.id+guild.id]
-  banse.add(ser.id)
-  boner.bans = Math.floor(boner.bans+1)
+//Zine , Mohamed Tarek , Kbosh
+ 
+let anti = JSON.parse(fs.readFileSync("./antigreff.json", "UTF8"));
+let config = JSON.parse(fs.readFileSync("./config.json", "UTF8"));
+client.on("message", message => {
+    if(!message.channel.guild) return;
+    let user = anti[message.guild.id+message.author.id]
+    let num = message.content.split(" ").slice(1).join(" ");
+    if(!anti[message.guild.id+message.author.id]) anti[message.guild.id+message.author.id] = {
+        actions: 0
+    }
+    if(!config[message.guild.id]) config[message.guild.id] = {
+        banLimit: 3,
+        chaDelLimit: 3,
+        roleDelLimit: 3,
+        kickLimits: 3,
+        roleCrLimits: 3,
+        time: 30
+    }
+if(message.content.startsWith(prefix + "limit")) {
  
  
-  setTimeout(() => {
-    boner.bans = 2
-    banse.delete(ser.id)
-  },8000)
- 
-  if(boner.bans > 2) {
-    let roles = guild.members.get(ser.id).roles.array()
-  guild.members.get(ser.id).removeRoles(roles)
-  }
- 
-      })
-      fs.writeFile('./data1.json', JSON.stringify(bane), (err) => {
-  if (err) console.error(err);
-  })
- 
-  })
-  client.on('guildMemberRemove', (u) => {
-      u.guild.fetchAuditLogs().then( s => {
-          var ss = s.entries.first();
-          if (ss.action == `MEMBER_KICK`) {
-          if (!data[ss.executor.id]) {
-              data[ss.executor.id] = {
-              time : 1
-            };
-            if(antihack[u.guild.id].onoff === 'Off') return;
- 
-        } else {  
-            data[ss.executor.id].time+=1
-        };
-        if(antihack[u.guild.id].onoff === 'Off') return;
-  data[ss.executor.id].time = 0
-  u.guild.members.get(ss.executor.id).roles.forEach(r => {
-                  r.edit({
-                      permissions : []
-                  });
-                  data[ss.executor.id].time = 0
-              });
-          setTimeout(function(){
-              if (data[ss.executor.id].time <= 3) {
-                  data[ss.executor.id].time = 0
-              }
-          })
-      };
-      });
-    const data = require("./data.json");
-  });
-  client.on('roleDelete', (u) => {
-      u.guild.fetchAuditLogs().then( s => {
-          var ss = s.entries.first();
-          if (ss.action == `ROLE_DELETE`) {
-          if (!data[ss.executor.id]) {
-              data[ss.executor.id] = {
-              time : 1
-            };
-            if(antihack[u.guild.id].onoff === 'Off') return;
- 
-        } else {
-            data[ss.executor.id].time+=1
-        };
-        if(antihack[u.guild.id].onoff === 'Off') return;
- 
-  data[ss.executor.id].time = 0
-  u.guild.members.get(ss.executor.id).roles.forEach(r => {   
-                  r.edit({
-                      permissions : []  
-                  });
-                  data[ss.executor.id].time = 0
-              });
-          setTimeout(function(){
-              if (data[ss.executor.id].time <= 3) {
-                  data[ss.executor.id].time = 0
-              }
-          },60000)
-      };
-      });
-    const data = require("./data.json");
-  });
-  client.on('channelDelete', (u) => {  
-      u.guild.fetchAuditLogs().then( s => { 
-          var ss = s.entries.first();
-          if (ss.action == `CHANNEL_DELETE`) { 
-          if (!data[ss.executor.id]) {
-              data[ss.executor.id] = { 
-              time : 1
-            };
-            if(antihack[u.guild.id].onoff === 'Off') return;
-        } else {
-            data[ss.executor.id].time+=1
-        };
-        if(antihack[u.guild.id].onoff === 'Off') return;
-  data[ss.executor.id].time = 0
-  u.guild.members.get(ss.executor.id).roles.forEach(r => {
-                  r.edit({
-                      permissions : []
-                  });
-                  data[ss.executor.id].time = 0
-              });
-          setTimeout(function(){
-              if (data[ss.executor.id].time <= 3) { 
-                  data[ss.executor.id].time = 0
-              }
-          })
-      };
-      });
-    const data = require("./data.json");
-  })
-  let antibots = JSON.parse(fs.readFileSync('./antibots.json' , 'utf8'));
-  client.on('message', message => {
-    if(message.content.startsWith(prefix + "antibots on")) {
-        if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
-        if(!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send('**Sorry But You Dont Have Permission** `ADMINISTRATOR`' );
-antibots[message.guild.id] = {
-onoff: 'On',
-}
-message.channel.send(`**ג… The AntiBots Is __ננ__ !**`)
-          fs.writeFile("./antibots.json", JSON.stringify(antibots), (err) => {
-            if (err) console.error(err)
-            .catch(err => {
-              console.error(err);
-          });
-            });
-          }
- 
-
-    if(message.content.startsWith(prefix + "antibots off")) {
-        if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
-        if(!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send('**Sorry But You Dont Have Permission** `ADMINISTRATOR`' );
-antibots[message.guild.id] = {
-onoff: 'Off',
-}
-message.channel.send(`**ג›” The AntiBots Is __ננ…נ…__ !**`)
-          fs.writeFile("./antibots.json", JSON.stringify(antibots), (err) => {
-            if (err) console.error(err)
-            .catch(err => {
-              console.error(err);
-          });
-            });
-          }
- 
-        })
- 
-client.on("guildMemberAdd", member => {
-  if(!antibots[member.guild.id]) antibots[member.guild.id] = {
-onoff: 'Off'
-}
-  if(antibots[member.guild.id].onoff === 'Off') return;
-if(member.user.bot) return member.kick()
-})
- 
-fs.writeFile("./antibots.json", JSON.stringify(antibots), (err) => {
-if (err) console.error(err)
-.catch(err => {
-console.error(err);
-});
-})
-
-//////זֿ דה ַבֺ־ׁםָ
-
-var config = {
-  events: [
-    {type: "CHANNEL_CREATE", logType: "CHANNEL_CREATE", limit: 3 , delay: 5000},
-    {type: "CHANNEL_DELETE", logType: "CHANNEL_DELETE", limit: 3, delay: 5000},
-    {type: "GUILD_MEMBER_REMOVE", logType: "MEMBER_KICK", limit: 3, delay: 5000},
-    {type: "GUILD_BAN_ADD", logType: "MEMBER_BAN_ADD", limit: 3, delay: 5000},
-    {type: "GUILD_ROLE_CREATE", logType: "ROLE_CREATE", limit: 3, delay: 5000},
-    {type: "GUILD_ROLE_DELETE", logType: "ROLE_DELETE", limit: 3, delay: 5000},
-  ]
-}
-client.on("error", (e) => console.error(e));
-client.on("raw", (packet)=> {
-  let {t, d} = packet, type = t, {guild_id} = data = d || {};
-  if (type === "READY") {
-    client.startedTimestamp = new Date().getTime();
-    client.captures = [];
-  }
-  let event = config.events.find(anEvent => anEvent.type === type);
-  if (!event) return;
-  let guild = client.guilds.get(guild_id);
-  if (!guild) return;
-  guild.fetchAuditLogs({limit : 1, type: event.logType})
-    .then(eventAudit => {
-      let eventLog = eventAudit.entries.first();
-      if (!eventLog) return;
-      let executor = eventLog.executor;
-      guild.fetchAuditLogs({type: event.logType, user: executor})
-        .then((userAudit, index) => {
-          let uses = 0;
-          userAudit.entries.map(entry => {
-            if (entry.createdTimestamp > client.startedTimestamp && !client.captures.includes(index)) uses += 1;
-          });
-          setTimeout(() => {
-            client.captures[index] = index
-          }, event.delay || 2000)
-          if (uses >= event.limit) {
-            client.emit("reachLimit", {
-              user: userAudit.entries.first().executor,
-              member: guild.members.get(executor.id),
-              guild: guild,
-              type: event.type,
-            })
-          }
-        }).catch(console.error)
-    }).catch(console.error)
-});
-
-
-
-
-client.on("reachLimit", (limit)=> {
-    let log = limit.guild.channels.find( channel => channel.name === "log");
-    log.send(`<@${limit.user.id}>`+"\ntried to hack (!)");
-    limit.guild.owner.send(limit.user.username+"\ntried to hack (!)")
-    limit.member.roles.map(role => {
-      limit.member.removeRole(role.id)
-      .catch(log.send)
+    if(!message.member.hasPermission('MANAGE_GUILD')) return;
+    if(message.content.startsWith(prefix + "limitbans")) {
+        if(!num) return message.channel.send("**→ | Supply a number !");
+        if(isNaN(num)) return message.channel.send("**→ | Supply a number !**");
+        config[message.guild.id].banLimit = num;
+        message.channel.send(`**→ | Changed bans limit to : ${config[message.guild.id].banLimit}.**`)//Zine , Mohamed Tarek , Kbosh
+    }
+    if(message.content.startsWith(prefix + "limitkicks")) {
+        if(!num) return message.channel.send("**→ | Supply a number !**");
+        if(isNaN(num)) return message.channel.send("**→ | Supply a number !**");//Zine , Mohamed Tarek , Kbosh
+        config[message.guild.id].kickLimits = num;
+        message.channel.send(`**→ | Changed kicks limit to : ${config[message.guild.id].kickLimits}.**`)
+    }
+    if(message.content.startsWith(prefix + "limitroleDelete")) {
+        if(!num) return message.channel.send("**→ | Supply a number !**");
+        if(isNaN(num)) return message.channel.send("**→ | Supply a number !**");
+        config[message.guild.id].roleDelLimit = num;
+        message.channel.send(`**→ | Changed Role Deleting limit to : ${config[message.guild.id].roleDelLimit}.**`)
+    }
+    if(message.content.startsWith(prefix + "limitroleCreate")) {
+        if(!num) return message.channel.send("**→ | Supply a number !**");
+        if(isNaN(num)) return message.channel.send("**→ | Supply a number !**");
+        config[message.guild.id].roleCrLimits = num;
+        message.channel.send(`**→ | Changed Role Creation limit to : ${config[message.guild.id].roleCrLimits}.**`)
+    }//Zine , Mohamed Tarek , Kbosh
+    if(message.content.startsWith(prefix + "limitchannelDelete")) {
+        if(!num) return message.channel.send("**→ | Supply a number !**");
+        if(isNaN(num)) return message.channel.send("**→ | Supply a number !**");
+        config[message.guild.id].chaDelLimit = num;
+        message.channel.send(`**→ | Changed Channel Deleting limit to : ${config[message.guild.id].chaDelLimit}.**`)
+    }
+    if(message.content.startsWith(prefix + "limittime")) {
+        if(!num) return message.channel.send("**→ | Supply a number !**");
+        if(isNaN(num)) return message.channel.send("**→ | Supply a number !**");
+        config[message.guild.id].time = num;
+        message.channel.send(`**→ | Changed Times limit to : ${config[message.guild.id].time}.**`)
+    }
+    fs.writeFile("./config.json", JSON.stringify(config, null, 2), function(e) {
+        if(e) throw e;
     });
-  });
-
-client.on('ready', () => {
-   console.log(`----------------`);
-      console.log(`Desert Bot- Script By : SkooF`);
-        console.log(`----------------`);
-      console.log(`ON ${client.guilds.size} Servers '     Script By : SkooF ' `);
-    console.log(`----------------`);
-  console.log(`Logged in as ${client.user.tag}!`);
-client.user.setGame(`#Dev by SkooF`,"http://twitch.tv/S-F")
-client.user.setStatus("dnd")
+    fs.writeFile("./antigreff.json", JSON.stringify(anti, null, 2), function(e) {
+        if(e) throw e;
+        });
+    }
 });
-
-
-
-
-
+client.on("channelDelete", async channel => {
+    const entry1 = await channel.guild.fetchAuditLogs({
+        type: 'CHANNEL_DELETE'
+    }).then(audit => audit.entries.first())
+    console.log(entry1.executor.username)
+    const entry = entry1.executor
+    if (!config[channel.guild.id]) config[channel.guild.id] = {
+        banLimit: 3,
+        chaDelLimit: 3,
+        roleDelLimit: 3,
+        kickLimits: 3,
+        roleCrLimits: 3
+    }
+    if (!anti[channel.guild.id + entry.id]) {//Zine , Mohamed Tarek , Kbosh
+        anti[channel.guild.id + entry.id] = {
+            actions: 1
+        }//Zine , Mohamed Tarek , Kbosh
+        setTimeout(() => {
+            anti[channel.guild.id + entry.id].actions = "0"
+        }, config[channel.guild.id].time * 1000)
+    } else {
+        anti[channel.guild.id + entry.id].actions = Math.floor(anti[channel.guild.id + entry.id].actions + 1)//Zine , Mohamed Tarek , Kbosh
+        console.log("TETS");
+        setTimeout(() => {
+            anti[channel.guild.id + entry.id].actions = "0"
+        }, config[channel.guild.id].time * 1000)
+        if (anti[channel.guild.id + entry.id].actions >= config[channel.guild.id].chaDelLimit) {
+            channel.guild.members.get(entry.id).ban().catch(e => channel.guild.owner.send(`**→ | ${entry.username} , Deleted many __Channles__.**`))
+            anti[channel.guild.id + entry.id].actions = "0"
+            fs.writeFile("./config.json", JSON.stringify(config, null, 2), function (e) {//Zine , Mohamed Tarek , Kbosh
+                if (e) throw e;
+            });//Zine , Mohamed Tarek , Kbosh
+            fs.writeFile("./antigreff.json", JSON.stringify(anti, null, 2), function (e) {
+                if (e) throw e;
+            });
+        }
+    }
+ 
+    fs.writeFile("./config.json", JSON.stringify(config, null, 2), function (e) {
+        if (e) throw e;
+    });
+    fs.writeFile("./antigreff.json", JSON.stringify(anti, null, 2), function (e) {
+        if (e) throw e;
+    });
+});//Zine , Mohamed Tarek , Kbosh
+ 
+client.on("roleDelete", async channel => {
+    const entry1 = await channel.guild.fetchAuditLogs({
+        type: 'ROLE_DELETE'
+    }).then(audit => audit.entries.first())
+    console.log(entry1.executor.username)
+    const entry = entry1.executor
+    if (!config[channel.guild.id]) config[channel.guild.id] = {
+        banLimit: 3,
+        chaDelLimit: 3,
+        roleDelLimit: 3,
+        kickLimits: 3,
+        roleCrLimits: 3
+    }
+    if (!anti[channel.guild.id + entry.id]) {
+        anti[channel.guild.id + entry.id] = {
+            actions: 1
+        }
+        setTimeout(() => {
+            anti[channel.guild.id + entry.id].actions = "0"
+        }, config[channel.guild.id].time * 1000)
+    } else {
+        anti[channel.guild.id + entry.id].actions = Math.floor(anti[channel.guild.id + entry.id].actions + 1)
+        console.log("TETS");
+        setTimeout(() => {
+            anti[channel.guild.id + entry.id].actions = "0"
+        }, config[channel.guild.id].time * 1000)
+        if (anti[channel.guild.id + entry.id].actions >= config[channel.guild.id].roleDelLimit) {
+            channel.guild.members.get(entry.id).ban().catch(e => channel.guild.owner.send(`**→ | ${entry.username} , Deleted many __Roles__!**`))
+            anti[channel.guild.id + entry.id].actions = "0"
+            fs.writeFile("./config.json", JSON.stringify(config, null, 2), function (e) {
+                if (e) throw e;
+            });
+            fs.writeFile("./antigreff.json", JSON.stringify(anti, null, 2), function (e) {
+                if (e) throw e;
+            });
+        }
+    }
+ 
+    fs.writeFile("./config.json", JSON.stringify(config, null, 2), function (e) {
+        if (e) throw e;
+    });
+    fs.writeFile("./antigreff.json", JSON.stringify(anti, null, 2), function (e) {
+        if (e) throw e;
+    });
+});
+ 
+client.on("roleCreate", async channel => {
+    const entry1 = await channel.guild.fetchAuditLogs({
+        type: 'ROLE_CREATE'
+    }).then(audit => audit.entries.first())
+    console.log(entry1.executor.username)
+    const entry = entry1.executor
+    if (!config[channel.guild.id]) config[channel.guild.id] = {
+        banLimit: 3,
+        chaDelLimit: 3,
+        roleDelLimit: 3,
+        kickLimits: 3,
+        roleCrLimits: 3
+    }
+    if (!anti[channel.guild.id + entry.id]) {
+        anti[channel.guild.id + entry.id] = {
+            actions: 1
+        }
+        setTimeout(() => {
+            anti[channel.guild.id + entry.id].actions = "0"
+        }, config[channel.guild.id].time * 1000)
+    } else {
+        anti[channel.guild.id + entry.id].actions = Math.floor(anti[channel.guild.id + entry.id].actions + 1)
+        console.log("TETS");
+        setTimeout(() => {
+            anti[channel.guild.id + entry.id].actions = "0"
+        }, config[channel.guild.id].time * 1000)
+        if (anti[channel.guild.id + entry.id].actions >= config[channel.guild.id].roleCrLimits) {
+            channel.guild.members.get(entry.id).ban().catch(e => channel.guild.owner.send(`**→ | ${entry.username} , is creating many __Rooms__.**`))
+            anti[channel.guild.id + entry.id].actions = "0"
+            fs.writeFile("./config.json", JSON.stringify(config, null, 2), function (e) {
+                if (e) throw e;
+            });
+            fs.writeFile("./antigreff.json", JSON.stringify(anti, null, 2), function (e) {
+                if (e) throw e;
+            });
+        }
+    }
+ 
+    fs.writeFile("./config.json", JSON.stringify(config, null, 2), function (e) {
+        if (e) throw e;
+    });
+    fs.writeFile("./antigreff.json", JSON.stringify(anti, null, 2), function (e) {
+        if (e) throw e;
+    });
+});
+ 
+ 
+ 
+ 
+ 
 client.login("");
